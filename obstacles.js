@@ -65,7 +65,7 @@ class Obstacle {
       }
     } else {
       this.frameX = 1;
-      if (this.x < 0 - this.width + this.width) {
+      if (this.x < 0 - this.width) {
         this.x = canvas.width + this.width;
         this.carType = Math.floor(Math.random() * numberOfCars);
       }
@@ -155,6 +155,7 @@ function buildHomes() {
 }
 
 function buildLevel(idx) {
+  levelIndex = idx;
   carsArray.length = 0;
   logsArray.length = 0;
   weatherArray.length = 0;
