@@ -1,0 +1,9 @@
+{
+  "name": "KnotzFrogHop",
+  "version": "2.0.0",
+  "description": "Knotz Frog Hop — a Frogger-style pond-hopping arcade game for the browser.",
+  "scripts": {
+    "test": "node --test tests/regression.test.mjs",
+    "start": "python3 -m http.server 8765 --bind 127.0.0.1 --directory ."
+  }
+}

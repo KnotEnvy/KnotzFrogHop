@@ -2,20 +2,114 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>KnotzFrogHop</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>KnotzFrogHop — Pond Adventure</title>
+        <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='12' fill='%234fc94f'/%3E%3Ccircle cx='10' cy='8' r='5' fill='%234fc94f'/%3E%3Ccircle cx='22' cy='8' r='5' fill='%234fc94f'/%3E%3Ccircle cx='10' cy='8' r='2' fill='%23102818'/%3E%3Ccircle cx='22' cy='8' r='2' fill='%23102818'/%3E%3C/svg%3E">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <div class="wrapper">
-            <canvas id="canvas1"></canvas>
-            <canvas id="canvas2"></canvas>
-            <canvas id="canvas3"></canvas>
-            <canvas id="canvas4"></canvas>
-            <canvas id="canvas5"></canvas>
+        <div id="app">
+            <h1 class="logo">KNOTZ FROG <span class="hop">HOP</span></h1>
+            <div id="topHud" class="hidden">
+                <div class="hud-group">
+                    <span class="pill gold">SCORE <span class="big" id="hudScore">0</span></span>
+                    <span class="pill">BEST <span class="big" id="hudBest">0</span></span>
+                </div>
+                <div class="hud-group">
+                    <span class="pill" id="hudLevelName">Meadow Crossing</span>
+                    <span class="pill">LVL <span id="hudLevel">1/3</span></span>
+                </div>
+                <div class="hud-group">
+                    <span class="pill" id="hudCombo"></span>
+                    <span class="pill" id="hudTime">TIME 45</span>
+                    <span class="pill" id="hudPads">0/5 pads</span>
+                    <span class="pill" id="hudLives"></span>
+                    <button class="icon-btn" id="pauseBtn" title="Pause (P)">II</button>
+                </div>
+            </div>
+            <div class="stage" id="stage">
+                <canvas id="canvas1"></canvas>
+                <canvas id="canvas2"></canvas>
+                <canvas id="canvas3"></canvas>
+                <canvas id="canvas4"></canvas>
+                <canvas id="canvas5"></canvas>
+
+                <div class="screen" id="titleScreen">
+                    <div class="panel">
+                        <h2>KNOTZ FROG HOP</h2>
+                        <p class="sub">Hop the highway. Ride the river. Fill all 5 lily pads across 3 lands — Meadow, Dusk Rapids, Night Highway.</p>
+                        <button class="btn" id="startBtn">START HOPPING</button>
+                        <button class="btn secondary" id="howBtn">HOW TO PLAY</button>
+                        <button class="btn ghost small" id="audioBtn">Sound: On</button>
+                    </div>
+                </div>
+
+                <div class="screen hidden" id="helpScreen">
+                    <div class="panel">
+                        <h2>HOW TO PLAY</h2>
+                        <ul class="how-list">
+                            <li><span class="keycap">↑</span><span class="keycap">↓</span><span class="keycap">←</span><span class="keycap">→</span> or <span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span> to hop. Swipe or d-pad works on touch.</li>
+                            <li>Dodge cars on the road. Ride logs and turtles across the river — sunk turtles don't count!</li>
+                            <li>Land on all 5 glowing lily pads to clear the land. Grab the fly for +200.</li>
+                            <li>Up-hops score +10, streaks earn combo bonuses. You have 3 lives. <span class="keycap">P</span> pauses, <span class="keycap">M</span> mutes.</li>
+                            <li>Beat the clock: each crossing attempt is timed. Run out and the frog loses a life. Held keys and d-pad repeat hops.</li>
+                            <li>Chain quick hops to build FLOW up to x5 hop points. Sitting still scores nothing.</li>
+                        </ul>
+                        <button class="btn" id="backBtn">GOT IT</button>
+                    </div>
+                </div>
+
+                <div class="screen hidden" id="pauseScreen">
+                    <div class="panel">
+                        <h2>PAUSED</h2>
+                        <p class="sub">The pond waits for no frog… except now.</p>
+                        <button class="btn" id="resumeBtn">RESUME</button>
+                        <button class="btn secondary" id="restartBtn">RESTART RUN</button>
+                        <button class="btn ghost small" id="quitBtn">QUIT TO TITLE</button>
+                    </div>
+                </div>
+
+                <div class="screen hidden" id="clearScreen">
+                    <div class="panel">
+                        <h2 id="clearTitle">LEVEL CLEAR!</h2>
+                        <p class="sub" id="clearSub"></p>
+                        <p class="sub">Get ready…</p>
+                    </div>
+                </div>
+
+                <div class="screen hidden" id="overScreen">
+                    <div class="panel">
+                        <h2 id="overTitle">GAME OVER</h2>
+                        <p class="reason" id="overReason"></p>
+                        <div class="stats">
+                            <span>Score</span><b id="statScore">0</b>
+                            <span>Best</span><b id="statBest">0</b>
+                            <span>Land reached</span><b id="statLevel">1/3</b>
+                            <span>Hops</span><b id="statHops">0</b>
+                        </div>
+                        <button class="btn" id="againBtn">HOP AGAIN</button>
+                        <button class="btn ghost small" id="titleBtn">TITLE SCREEN</button>
+                    </div>
+                </div>
+            </div>
+            <div id="dpad">
+                <div class="cluster">
+                    <span class="spacer"></span>
+                    <button id="upBtn" aria-label="Hop up">▲</button>
+                    <span class="spacer"></span>
+                    <button id="leftBtn" aria-label="Hop left">◀</button>
+                    <button id="downBtn" aria-label="Hop down">▼</button>
+                    <button id="rightBtn" aria-label="Hop right">▶</button>
+                </div>
+            </div>
+            <p class="hint-desktop">Arrows / WASD to hop &nbsp;•&nbsp; P pause &nbsp;•&nbsp; M mute &nbsp;•&nbsp; Enter start</p>
         </div>
 
         <script src="setup.js"></script>
+        <script src="audio.js"></script>
         <script src="frogger.js"></script>
         <script src="particles.js"></script>
         <script src="ripples.js"></script>
