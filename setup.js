@@ -47,7 +47,7 @@ const grid = SIZES.grid;
 let keys = {};
 let score = 0;
 let best = 0;
-let lives = 3;
+let lives = 5;
 let levelIndex = 0;
 let streak = 0;
 let frame = 0;
@@ -84,9 +84,10 @@ const LEVELS = [
     name: 'Meadow Crossing',
     sub: 'Morning hop — learn the road',
     // Signed lane speeds: each lane's sign is its direction. Do NOT negate again.
-    roadSpeeds: [1.0, -1.7, 1.1],
+    roadSpeeds: [0.8, -1.2, 0.7],
     carsPerLane: 2,
-    waterSpeeds: [-1.3, 1.1],
+    carW: 120,
+    waterSpeeds: [-1.1, 0.9],
     riverLogs: 3,
     riverTurtles: 4,
     diving: false,
@@ -102,8 +103,9 @@ const LEVELS = [
   {
     name: 'Dusk Rapids',
     sub: 'Sinking turtles — time your ride',
-    roadSpeeds: [-1.7, 2.4, -2.2],
+    roadSpeeds: [-1.7, 2.4, -1.2],
     carsPerLane: 2,
+    carW: 140,
     waterSpeeds: [1.8, -1.5],
     riverLogs: 2,
     riverTurtles: 3,
@@ -120,8 +122,9 @@ const LEVELS = [
   {
     name: 'Night Highway',
     sub: 'Neon rush — no second chances',
-    roadSpeeds: [2.4, -3.4, 2.8],
+    roadSpeeds: [2.4, -3.4, 1.8],
     carsPerLane: 3,
+    carW: 160,
     waterSpeeds: [-2.4, 2.0],
     riverLogs: 3,
     riverTurtles: 3,

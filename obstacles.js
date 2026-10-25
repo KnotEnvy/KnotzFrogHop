@@ -26,7 +26,16 @@ class Obstacle {
       ctx1.save();
       ctx1.globalAlpha = alpha;
       if (lvl.diving && this.diving) ctx1.translate(0, this.diveT * 8);
+      if (lvl.diving && this.diveWarn) ctx1.translate(Math.sin(now / 70) * 3, 0);
       ctx1.drawImage(turtle, this.frameX * 70, this.frameY * 70, 70, 70, this.x, this.y, this.width, this.height);
+      // Warning ring while a dive is approaching.
+      if (lvl.diving && this.diveWarn) {
+        ctx1.strokeStyle = 'rgba(255,255,255,' + (0.4 + 0.3 * Math.sin(now / 90)).toFixed(2) + ')';
+        ctx1.lineWidth = 2.5;
+        ctx1.beginPath();
+        ctx1.ellipse(this.x + this.width / 2, this.y + this.height / 2, this.width / 2 + 4, this.height / 2 + 2, 0, 0, Math.PI * 2);
+        ctx1.stroke();
+      }
       ctx1.restore();
     } else if (this.type === 'log') {
       ctx1.drawImage(log, this.x, this.y, this.width, this.height);
@@ -39,11 +48,15 @@ class Obstacle {
     const lvl = LEVELS[levelIndex];
     if (this.type === 'turtle' && lvl.diving) {
       this.divePhase += 0.02 * gameSpeed;
-      this.diving = Math.sin(this.divePhase) > 0.55;
-      this.diveT = this.diving ? clamp((Math.sin(this.divePhase) - 0.55) * 3, 0, 1) : 0;
+      const s = Math.sin(this.divePhase);
+      this.diving = s > 0.55;
+      this.diveT = this.diving ? clamp((s - 0.55) * 3, 0, 1) : 0;
+      // Telegraph: warn while the dive is approaching so riders can hop off.
+      this.diveWarn = !this.diving && s > 0.3;
     } else {
       this.diving = false;
       this.diveT = 0;
+      this.diveWarn = false;
     }
     if (this.speed > 0) {
       if (this.x > canvas.width + this.width) {
@@ -134,7 +147,7 @@ function buildHomes() {
   homes = [];
   const n = 5, gap = canvas.width / n;
   for (let i = 0; i < n; i++) {
-    homes.push({ x: i * gap + gap / 2 - 32, y: 54, w: 64, h: 44, filled: false });
+    homes.push({ x: i * gap + gap / 2 - 36, y: 54, w: 72, h: 44, filled: false });
   }
   homesCount = 0;
   fly = null;
@@ -153,7 +166,7 @@ function buildLevel(idx) {
     const per = lvl.carsPerLane;
     for (let i = 0; i < per; i++) {
       const x = (i * canvas.width) / per + rand(-40, 40);
-      carsArray.push(new Obstacle(x, roadY[lane], grid * 2, grid, lvl.roadSpeeds[lane], 'car'));
+      carsArray.push(new Obstacle(x, roadY[lane], lvl.carW || grid * 2, grid, lvl.roadSpeeds[lane], 'car'));
     }
   }
   // 2 river lanes: logs then turtles, counts per level table.

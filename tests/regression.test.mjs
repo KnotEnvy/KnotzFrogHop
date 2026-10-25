@@ -64,6 +64,8 @@ function probe(sandbox, level) {
         table: LEVELS[${level}].roadSpeeds,
         lanes: Object.values(lanes),
         carsPerLane: LEVELS[${level}].carsPerLane,
+        carW: LEVELS[${level}].carW,
+        widths: carsArray.map(c => c.width),
         timeLeft,
         timeLimit: LEVELS[${level}].timeLimit,
       });
@@ -85,6 +87,7 @@ describe('level construction', () => {
         assert.equal(signs.length, r.carsPerLane, 'spawn count matches table');
         for (const s of signs) assert.equal(s, expected, `lane ${lane} direction`);
       });
+      for (const w of r.widths) assert.equal(w, r.carW, 'car width matches table');
     });
 
     it(`level ${level}: crossing clock resets to the level time limit`, () => {
@@ -93,6 +96,19 @@ describe('level construction', () => {
       assert.equal(r.timeLeft, r.timeLimit);
     });
   }
+
+  it('the seam lane (index 2, beside the river) is the slowest road lane', () => {
+    const ctx = makeContext();
+    for (let level = 0; level < 3; level++) {
+      const table = JSON.parse(
+        vm.runInContext(`JSON.stringify(LEVELS[${level}].roadSpeeds)`, ctx),
+      );
+      assert.ok(
+        Math.abs(table[2]) < Math.abs(table[1]),
+        `level ${level}: seam lane slower than the fast lane`,
+      );
+    }
+  });
 
   it('lane 2 runs opposite directions across lands (the double-negation regression)', () => {
     const ctx = makeContext();

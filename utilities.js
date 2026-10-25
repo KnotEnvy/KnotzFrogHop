@@ -34,7 +34,7 @@ function onHopLanded(wentUp) {
 function resolveHomeLanding() {
   if (screen !== 'playing') return;
   const cx = frogger.x + frogger.width / 2;
-  const pad = homes.find((h) => cx >= h.x - 6 && cx <= h.x + h.w + 6);
+  const pad = homes.find((h) => cx >= h.x - 16 && cx <= h.x + h.w + 16);
   if (!pad) { frogger.resetToStart(); return; }
   if (pad.filled) {
     score += 10;
@@ -45,7 +45,8 @@ function resolveHomeLanding() {
   }
   pad.filled = true;
   homesCount++;
-  let gained = 100 + streak * 2;
+  // Pads are the scoring event: 150 base, +50 per pad already home, plus streak.
+  let gained = 100 + 50 * homesCount + streak * 2;
   let label = '+' + gained;
   const idx = homes.indexOf(pad);
   if (fly && fly.padIndex === idx && performance.now() < fly.until) {
@@ -98,15 +99,20 @@ function onDeath(kind) {
     setTimeout(() => { if (screen === 'dying') screen = 'gameover'; }, 700);
   } else {
     frogger.resetToStart();
-    frogger.invulnUntil = performance.now() + 1500;
+    frogger.invulnUntil = performance.now() + 2000;
     resetClock();
   }
 }
 
 function onLevelClear() {
-  const bonus = 250 * (levelIndex + 1);
+  const bonus = 500 * (levelIndex + 1);
   score += bonus;
   saveBest();
+  if (levelIndex < LEVELS.length - 1 && lives < 6) {
+    lives++;
+    spawnFloater(canvas.width / 2, 300, '+1 LIFE', '#7CFC98');
+    AudioSys.home();
+  }
   updateHUD();
   if (levelIndex >= LEVELS.length - 1) {
     gameWon = true;
@@ -139,7 +145,7 @@ function startRun() {
   AudioSys.startMusic();
   AudioSys.ui();
   score = 0;
-  lives = 3;
+  lives = 5;
   levelIndex = 0;
   streak = 0;
   resetFlow();
@@ -149,7 +155,7 @@ function startRun() {
   buildLevel(0);
   clearEffects();
   frogger.resetToStart();
-  frogger.invulnUntil = performance.now() + 1500;
+  frogger.invulnUntil = performance.now() + 2000;
   resetClock();
   screen = 'playing';
   syncScreens();
@@ -182,7 +188,7 @@ function updateHUD() {
   $('hudTime').classList.toggle('urgent', secs <= 10);
   const hearts = $('hudLives');
   hearts.innerHTML = '';
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < Math.max(3, lives); i++) {
     const s = document.createElement('span');
     s.className = 'life' + (i < lives ? '' : ' lost');
     hearts.appendChild(s);
@@ -395,7 +401,7 @@ function scored() {
 }
 
 function resetGame() {
-  lives = 3;
+  lives = 5;
   score = 0;
   streak = 0;
   gameSpeed = 1;
